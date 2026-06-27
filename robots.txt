@@ -1,0 +1,42 @@
+# robots.txt for https://dnsbenchmarkpro.com/
+# This is a static informational tool with no private or admin areas,
+# so all well-behaved crawlers are allowed to access the entire site.
+
+User-agent: *
+Allow: /
+
+# --- Google ---
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+# Google's AI/Gemini + AI Overviews crawler
+User-agent: Google-Extended
+Allow: /
+
+# --- Bing ---
+User-agent: Bingbot
+Allow: /
+
+# --- AI / answer-engine crawlers (allowed to aid citation visibility) ---
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+# Note: CSS, JS, and image assets are intentionally NOT blocked —
+# Googlebot needs them to render and evaluate the page.
+
+Sitemap: https://dnsbenchmarkpro.com/sitemap.xml

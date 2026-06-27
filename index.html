@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DNS Benchmark Pro — Find the Fastest Free DNS for Your Location</title>
+<meta name="description" content="Free DNS benchmark tool. Test 35+ public DNS resolvers (Cloudflare, Google, Quad9 and more) by real DoH latency and get the fastest, most reliable DNS for your location." />
+<link rel="canonical" href="https://dnsbenchmarkpro.com/" />
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+<meta name="author" content="Genext Information Systems" />
+<meta name="theme-color" content="#0B0F19" />
+<link rel="sitemap" type="application/xml" href="https://dnsbenchmarkpro.com/sitemap.xml" />
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="DNS Benchmark Pro" />
+<meta property="og:title" content="DNS Benchmark Pro — Find the Fastest Free DNS for Your Location" />
+<meta property="og:description" content="Test 35+ public DNS resolvers by real DoH latency and get the fastest, most reliable DNS for your location — with one-click setup guides." />
+<meta property="og:url" content="https://dnsbenchmarkpro.com/" />
+<meta property="og:image" content="https://dnsbenchmarkpro.com/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="DNS Benchmark Pro — find the fastest free DNS for your location" />
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="DNS Benchmark Pro — Find the Fastest Free DNS" />
+<meta name="twitter:description" content="Benchmark 35+ public DNS resolvers by real latency and get the fastest, most reliable DNS for your location." />
+<meta name="twitter:image" content="https://dnsbenchmarkpro.com/og-image.png" />
+<!-- Google Consent Mode v2 — defaults to denied; re-applies a returning visitor's saved choice -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('consent', 'default', {
+    ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+    analytics_storage: 'denied', wait_for_update: 500
+  });
+  try {
+    var _c = JSON.parse(localStorage.getItem('dbp-consent-v1') || 'null');
+    if (_c && _c.ads) gtag('consent', 'update', {
+      ad_storage:'granted', ad_user_data:'granted', ad_personalization:'granted',
+      analytics_storage: _c.analytics ? 'granted' : 'denied'
+    });
+  } catch(e){}
+</script>
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2738929737632064" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+        },
+        colors: {
+          base: '#0B0F19',
+          panel: '#0F1424',
+          accent: '#00E5FF',
+        },
+      },
+    },
+  };
+</script>
+<style>
+  :root {
+    --accent: #00E5FF;
+    --accent-dim: rgba(0, 229, 255, 0.12);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: #0B0F19;
+    color: #E6EAF2;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  /* Layered ambient background: grid + glow */
+  .bg-fx {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 35%, #000 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 35%, #000 40%, transparent 100%);
+  }
+  .bg-glow-1 {
+    position: absolute;
+    width: 900px; height: 900px;
+    top: -380px; left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(0,229,255,0.14), transparent 60%);
+    filter: blur(20px);
+  }
+  .bg-glow-2 {
+    position: absolute;
+    width: 600px; height: 600px;
+    bottom: -300px; right: -150px;
+    background: radial-gradient(circle, rgba(99,102,241,0.12), transparent 60%);
+    filter: blur(30px);
+  }
+  /* Glass panels */
+  .glass {
+    background: linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .glass-hover { transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease; }
+  .glass-hover:hover {
+    border-color: rgba(0,229,255,0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px -12px rgba(0,229,255,0.25);
+  }
+  /* Primary CTA */
+  .cta {
+    position: relative;
+    background: linear-gradient(180deg, #00E5FF, #00B8D4);
+    color: #04121A;
+    box-shadow: 0 0 0 1px rgba(0,229,255,0.4), 0 18px 50px -12px rgba(0,229,255,0.55);
+    transition: transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, filter .2s ease;
+  }
+  .cta:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 0 0 1px rgba(0,229,255,0.6), 0 24px 60px -10px rgba(0,229,255,0.7); }
+  .cta:active { transform: translateY(0); }
+  .cta::after {
+    content: "";
+    position: absolute; inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.45) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform .7s ease;
+  }
+  .cta:hover::after { transform: translateX(120%); }
+  .cta:disabled { opacity: .55; cursor: not-allowed; filter: grayscale(.2); }
+
+  /* View transitions */
+  .view { animation: fadeUp .5s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .stagger > * { animation: fadeUp .5s cubic-bezier(.2,.7,.2,1) both; }
+
+  /* Spinner / pulse */
+  .ring-spin { animation: spin 1.1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .pulse-dot { animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: .35; transform: scale(.85);} 50% { opacity: 1; transform: scale(1);} }
+
+  .bar-fill { transition: width .9s cubic-bezier(.2,.8,.2,1); }
+  .score-ring { transition: stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1); }
+
+  .badge-best {
+    background: linear-gradient(180deg, rgba(0,229,255,0.18), rgba(0,229,255,0.06));
+    border: 1px solid rgba(0,229,255,0.5);
+    box-shadow: 0 0 30px -6px rgba(0,229,255,0.45);
+  }
+  .copy-btn { transition: all .15s ease; }
+  .copy-btn:active { transform: scale(.94); }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #0B0F19; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,229,255,0.4); }
+
+  .tab-active { color: #04121A; background: linear-gradient(180deg,#00E5FF,#00B8D4); box-shadow: 0 8px 24px -10px rgba(0,229,255,.6); }
+  .toast {
+    position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px);
+    opacity: 0; pointer-events: none; transition: all .3s ease; z-index: 60;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .row-rank { font-variant-numeric: tabular-nums; }
+
+  /* ---- Ad slots (Google AdSense placeholders) ---- */
+  .ad-slot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border: 1px dashed rgba(255,255,255,0.14);
+    border-radius: 14px;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.012) 0 12px, rgba(255,255,255,0.028) 12px 24px);
+    color: rgba(255,255,255,0.30);
+    overflow: hidden;
+  }
+  .ad-slot .ad-label {
+    position: absolute; top: 8px; left: 10px;
+    font-size: 9px; letter-spacing: .14em; text-transform: uppercase;
+    color: rgba(255,255,255,0.28); font-weight: 600;
+  }
+  .ad-slot .ad-hint { font-size: 12px; text-align: center; padding: 0 12px; }
+  .ad-leaderboard { min-height: 90px; }
+  .ad-rectangle  { min-height: 250px; max-width: 336px; margin-inline: auto; }
+  @media (max-width: 640px){ .ad-leaderboard { min-height: 100px; } }
+
+  /* ---- Cookie consent ---- */
+  #consent {
+    position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(28px);
+    z-index: 70; width: min(680px, calc(100vw - 32px));
+    opacity: 0; pointer-events: none; transition: opacity .35s ease, transform .35s ease;
+  }
+  #consent.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+  .consent-btn { transition: all .15s ease; }
+  .consent-btn:active { transform: scale(.97); }
+
+  /* ---- Footer ---- */
+  .footer-link { transition: color .15s ease; }
+  .footer-link:hover { color: #00E5FF; }
+
+  /* Visible focus rings for keyboard accessibility */
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid #00E5FF; outline-offset: 3px; border-radius: 6px;
+  }
+  .sr-only {
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
+
+  /* ---- Latency bar chart ---- */
+  .ch-label { fill: rgba(255,255,255,0.62); font-size: 12px; font-family: 'Inter', sans-serif; }
+  .ch-axis  { fill: rgba(255,255,255,0.40); font-size: 12px; font-family: 'Inter', sans-serif; }
+  .ch-tick  { fill: rgba(255,255,255,0.32); font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+  .ch-grid  { stroke: rgba(255,255,255,0.06); stroke-width: 1; }
+  .ch-base  { stroke: rgba(255,255,255,0.14); stroke-width: 1; }
+  .ch-bar   { transition: filter .12s ease; }
+  .ch-bar.hot { filter: brightness(1.28); }
+  .ch-row   { cursor: pointer; }
+  .ch-row .ch-label { transition: fill .12s ease; }
+  .ch-row:hover .ch-label { fill: #fff; }
+  .chart-tip {
+    position: absolute; display: none; z-index: 30; pointer-events: none; min-width: 150px;
+    background: rgba(12,18,32,0.97); border: 1px solid rgba(0,229,255,0.30); border-radius: 10px;
+    padding: 9px 11px; box-shadow: 0 16px 44px -12px rgba(0,0,0,0.75);
+  }
+  .chart-tip .tt-name { font-weight: 600; font-size: 13px; color: #fff; margin-bottom: 5px; }
+  .chart-tip .ttrow { font-size: 12px; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 6px; line-height: 1.65; }
+  .chart-tip .ttrow b { color: #fff; font-weight: 600; }
+  .chart-tip .sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://dnsbenchmarkpro.com/#organization",
+      "name": "Genext Information Systems",
+      "url": "https://dnsbenchmarkpro.com/",
+      "logo": "https://dnsbenchmarkpro.com/og-image.png"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://dnsbenchmarkpro.com/#website",
+      "name": "DNS Benchmark Pro",
+      "url": "https://dnsbenchmarkpro.com/",
+      "publisher": { "@id": "https://dnsbenchmarkpro.com/#organization" },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://dnsbenchmarkpro.com/#app",
+      "name": "DNS Benchmark Pro",
+      "url": "https://dnsbenchmarkpro.com/",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any (web browser)",
+      "browserRequirements": "Requires JavaScript and a modern browser with DNS-over-HTTPS support",
+      "description": "A free, browser-based tool that benchmarks 35+ public DNS resolvers by real DNS-over-HTTPS latency and recommends the fastest, most reliable DNS for your location.",
+      "isPartOf": { "@id": "https://dnsbenchmarkpro.com/#website" },
+      "publisher": { "@id": "https://dnsbenchmarkpro.com/#organization" },
+      "dateModified": "2026-06-19",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "featureList": [
+        "Real DNS-over-HTTPS latency benchmarking",
+        "Tests 35+ public DNS resolvers",
+        "Location-aware recommendation",
+        "Jitter and consistency scoring",
+        "One-click Windows and macOS setup guides"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://dnsbenchmarkpro.com/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the fastest free DNS server?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It depends on your location and network, which is exactly what this tool measures. In most regions Cloudflare (1.1.1.1), Google (8.8.8.8) and Quad9 (9.9.9.9) rank among the fastest, but the only way to know your fastest is to benchmark from your own connection." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it safe to change my DNS server?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Changing DNS only affects how domain names are looked up; it does not expose your data and you can revert to automatic (DHCP) settings at any time. Note your current settings before changing them." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does a faster DNS make my internet faster?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It will not increase your bandwidth, but a faster, more reliable resolver reduces the delay before pages and apps start loading, which makes browsing feel noticeably snappier, especially on sites that pull from many domains." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is DNS-over-HTTPS (DoH)?",
+          "acceptedAnswer": { "@type": "Answer", "text": "DNS-over-HTTPS encrypts DNS queries inside HTTPS so they cannot be read or tampered with on the network. DNS Benchmark Pro uses DoH endpoints to measure each resolver securely and accurately from your browser." }
+        },
+        {
+          "@type": "Question",
+          "name": "How accurate is a browser-based DNS benchmark?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It provides excellent guidance. Browser tests measure real DoH round-trip time from your device, though they are not identical to native system queries and can vary between runs and networks." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which DNS is best for privacy?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Resolvers such as Mullvad, Quad9 and DNS0.eu have strong no-logging or privacy policies. DNS Benchmark Pro labels each resolver's filtering and privacy characteristics so you can balance speed against privacy." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body class="font-sans antialiased relative">
+
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-[80] focus:top-3 focus:left-3 focus:bg-accent focus:text-[#04121A] focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold">Skip to main content</a>
+
+  <!-- Ambient background -->
+  <div class="bg-fx">
+    <div class="bg-grid"></div>
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+  </div>
+
+  <!-- Top nav -->
+  <header class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-6 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl grid place-items-center" style="background:linear-gradient(180deg,#00E5FF,#00B8D4);box-shadow:0 8px 24px -10px rgba(0,229,255,.7)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#04121A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg>
+      </div>
+      <div class="leading-tight">
+        <div class="font-bold tracking-tight text-[15px]">DNS Benchmark <span class="text-accent">Pro</span></div>
+        <div class="text-[11px] text-white/40">Real-time DoH latency analysis</div>
+      </div>
+    </div>
+    <div class="hidden sm:flex items-center gap-2 text-[12px] text-white/45">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+      <span id="navStatus">Engine ready</span>
+    </div>
+  </header>
+
+  <main id="main" role="main" class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pb-12">
+
+    <!-- ============ HERO / IDLE ============ -->
+    <section id="heroView" class="view min-h-[calc(100vh-90px)] flex flex-col items-center justify-center text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass text-[12.5px] text-white/70 mb-8">
+        <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+        Benchmarks 35+ public DNS providers via DNS-over-HTTPS
+      </div>
+      <h1 class="font-extrabold tracking-tight leading-[1.05] text-4xl sm:text-5xl lg:text-6xl max-w-4xl">
+        Find the <span class="text-accent">fastest free DNS</span><br class="hidden sm:block" /> for your exact location
+      </h1>
+      <p class="mt-6 text-base sm:text-lg text-white/55 max-w-xl leading-relaxed">
+        One click runs real latency tests against the top public resolvers and returns a ranked,
+        location-aware recommendation — plus the exact steps to apply it.
+      </p>
+
+      <div class="mt-11">
+        <button id="startBtn" class="cta group inline-flex items-center gap-3 rounded-2xl px-9 py-5 text-lg font-bold tracking-tight overflow-hidden">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-8-4.5-8-11a8 8 0 0 1 16 0c0 6.5-8 11-8 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>
+          Detect Location &amp; Benchmark DNS
+        </button>
+        <p class="mt-4 text-[12.5px] text-white/35">Takes ~10 seconds · No signup · Runs entirely in your browser</p>
+      </div>
+
+      <div class="mt-14 grid grid-cols-3 gap-8 sm:gap-14 text-center">
+        <div><div class="text-2xl font-bold text-white">35+</div><div class="text-[12px] text-white/40 mt-1">Providers tested</div></div>
+        <div><div class="text-2xl font-bold text-white">Top 10</div><div class="text-[12px] text-white/40 mt-1">Ranked &amp; scored</div></div>
+        <div><div class="text-2xl font-bold text-white">100</div><div class="text-[12px] text-white/40 mt-1">Point score scale</div></div>
+      </div>
+
+      <!-- AD ZONE (before benchmark) — secondary banner -->
+      <aside class="ad-slot ad-leaderboard w-full max-w-2xl mt-12" aria-label="Advertisement" data-ad-slot="hero-bottom">
+        <span class="ad-label">Advertisement</span>
+        <span class="ad-hint">Ad space · responsive banner</span>
+      </aside>
+    </section>
+
+    <!-- ============ LOADING ============ -->
+    <section id="loadingView" class="hidden min-h-[calc(100vh-90px)] flex-col items-center justify-center text-center">
+      <div class="relative w-32 h-32 mb-10">
+        <svg class="ring-spin" width="128" height="128" viewBox="0 0 128 128">
+          <circle cx="64" cy="64" r="56" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="6"/>
+          <circle cx="64" cy="64" r="56" fill="none" stroke="#00E5FF" stroke-width="6" stroke-linecap="round" stroke-dasharray="90 260"/>
+        </svg>
+        <div class="absolute inset-0 grid place-items-center">
+          <span id="loadPct" class="text-2xl font-bold mono text-accent">0%</span>
+        </div>
+      </div>
+      <h2 id="loadTitle" class="text-2xl font-bold tracking-tight">Initializing benchmark engine…</h2>
+      <p id="loadSub" class="mt-3 text-white/45 max-w-md">Preparing secure DNS-over-HTTPS probes.</p>
+
+      <div class="mt-10 w-full max-w-md space-y-3" id="loadSteps"></div>
+    </section>
+
+    <!-- ============ RESULTS ============ -->
+    <section id="resultsView" class="hidden">
+      <!-- AD ZONE (after benchmark) — top leaderboard -->
+      <aside class="ad-slot ad-leaderboard w-full mt-6" aria-label="Advertisement" data-ad-slot="results-top">
+        <span class="ad-label">Advertisement</span>
+        <span class="ad-hint">Ad space · 728×90 leaderboard</span>
+      </aside>
+
+      <!-- top bar: location + recommendation -->
+      <div class="pt-8 grid lg:grid-cols-3 gap-5 stagger">
+        <!-- location -->
+        <div class="glass rounded-2xl p-5 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl grid place-items-center shrink-0" style="background:var(--accent-dim)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-8-4.5-8-11a8 8 0 0 1 16 0c0 6.5-8 11-8 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>
+          </div>
+          <div class="min-w-0">
+            <div class="text-[11px] uppercase tracking-wider text-white/40">Detected location</div>
+            <div id="locName" class="font-semibold text-[15px] truncate">Locating…</div>
+            <div id="locMeta" class="text-[12px] text-white/40 truncate">—</div>
+          </div>
+        </div>
+
+        <!-- recommendation (spans 2) -->
+        <div class="lg:col-span-2 badge-best rounded-2xl p-5 relative overflow-hidden">
+          <div class="absolute top-4 right-5 text-[11px] font-bold tracking-widest text-accent/80">★ #1 RECOMMENDED</div>
+          <div class="text-[11px] uppercase tracking-wider text-accent/70">Recommended DNS settings for your location</div>
+          <div class="mt-2 flex flex-wrap items-end gap-x-6 gap-y-3">
+            <div>
+              <div id="recName" class="text-2xl font-extrabold tracking-tight">—</div>
+              <div id="recReason" class="text-[12.5px] text-white/55 mt-0.5">Analyzing…</div>
+            </div>
+            <div class="flex gap-3 ml-auto">
+              <div class="text-center">
+                <div class="text-[11px] text-white/45 mb-1">Primary</div>
+                <button class="copy-btn mono text-sm bg-black/30 hover:bg-black/50 border border-white/10 rounded-lg px-3 py-2 flex items-center gap-2" data-copy id="recPrimaryBtn"><span id="recPrimary">—</span>📋</button>
+              </div>
+              <div class="text-center">
+                <div class="text-[11px] text-white/45 mb-1">Secondary</div>
+                <button class="copy-btn mono text-sm bg-black/30 hover:bg-black/50 border border-white/10 rounded-lg px-3 py-2 flex items-center gap-2" data-copy id="recSecondaryBtn"><span id="recSecondary">—</span>📋</button>
+              </div>
+            </div>
+          </div>
+          <p class="mt-3 text-[12.5px] text-white/55">We recommend switching to these settings for improved speed and reliability. Setup guides are below.</p>
+        </div>
+      </div>
+
+      <!-- ranking header -->
+      <div class="mt-8 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-xl font-bold tracking-tight">Benchmark results</h2>
+          <p id="rankSub" class="text-[12.5px] text-white/40">Ranked by overall score · lower latency &amp; jitter is better</p>
+        </div>
+        <div class="flex items-center gap-1 text-[12px] glass rounded-lg p-1">
+          <button class="sortBtn tab-active px-3 py-1.5 rounded-md font-medium" data-sort="score">Score</button>
+          <button class="sortBtn px-3 py-1.5 rounded-md font-medium text-white/60" data-sort="latency">Latency</button>
+          <button class="sortBtn px-3 py-1.5 rounded-md font-medium text-white/60" data-sort="jitter">Jitter</button>
+        </div>
+      </div>
+
+      <!-- table -->
+      <div class="mt-4 glass rounded-2xl overflow-hidden">
+        <div class="hidden md:grid grid-cols-12 gap-3 px-5 py-3 text-[11px] uppercase tracking-wider text-white/40 border-b border-white/[0.06]">
+          <div class="col-span-1">#</div>
+          <div class="col-span-3">Provider</div>
+          <div class="col-span-3">Addresses</div>
+          <div class="col-span-2">Avg latency</div>
+          <div class="col-span-1">Jitter</div>
+          <div class="col-span-2 text-right">Score</div>
+        </div>
+        <div id="resultsRows"></div>
+      </div>
+
+      <!-- Full-field latency chart -->
+      <div class="mt-6 glass rounded-2xl p-5">
+        <div class="flex items-center justify-between flex-wrap gap-2 mb-1">
+          <div>
+            <h3 class="text-base font-bold tracking-tight">Full field · response time by provider</h3>
+            <p id="chartSub" class="text-[12px] text-white/40">Every resolver that responded, fastest first · hover a bar for avg / min / max</p>
+          </div>
+          <div class="flex items-center gap-3 text-[11px] text-white/45">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm" style="background:hsl(146 66% 46%)"></span>Faster</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm" style="background:hsl(40 75% 50%)"></span></span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm" style="background:hsl(2 72% 50%)"></span>Slower</span>
+          </div>
+        </div>
+        <div id="chartWrap" class="relative mt-3">
+          <div id="chartTip" class="chart-tip"></div>
+          <div id="latencyChart"></div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex justify-center">
+        <button id="rerunBtn" class="text-[13px] text-white/50 hover:text-accent transition flex items-center gap-2">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          Run benchmark again
+        </button>
+      </div>
+
+      <!-- ============ SETUP INSTRUCTIONS ============ -->
+      <section id="setup" class="mt-16">
+        <div class="text-center max-w-2xl mx-auto">
+          <h2 class="text-2xl font-bold tracking-tight">Apply your recommended DNS</h2>
+          <p class="mt-2 text-white/50">Follow the steps for your operating system. Copy buttons insert the recommended addresses for you.</p>
+        </div>
+
+        <!-- OS tabs -->
+        <div class="mt-7 flex justify-center">
+          <div class="inline-flex items-center gap-1 glass rounded-xl p-1">
+            <button class="osTab tab-active px-5 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2" data-os="win">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.4 10.5 4.3v7.2H3V5.4Zm0 13.2L10.5 19.7v-7.1H3v6Zm8.5 1.3L21 21V12.6h-9.5v7.3Zm0-15.6V11.5H21V3l-9.5 1.3Z"/></svg>
+              Windows
+            </button>
+            <button class="osTab px-5 py-2.5 rounded-lg font-semibold text-sm text-white/60 flex items-center gap-2" data-os="mac">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.8-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .7 1.1 1.6 2.3 2.8 2.3 1.1 0 1.5-.7 2.9-.7 1.3 0 1.7.7 2.9.7 1.2 0 1.9-1.1 2.7-2.2.8-1.3 1.2-2.5 1.2-2.6-.1 0-2.3-.9-2.3-3.3ZM14.1 5.3c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.6 1.3-.6.7-1.1 1.7-.9 2.8 1 .1 2-.5 2.6-1.2Z"/></svg>
+              macOS
+            </button>
+          </div>
+        </div>
+
+        <!-- Windows panel -->
+        <div id="winPanel" class="mt-7 grid lg:grid-cols-2 gap-5">
+          <div class="glass rounded-2xl p-6">
+            <div class="flex items-center gap-2 text-[12px] text-accent font-semibold mb-4"><span class="w-1.5 h-1.5 rounded-full bg-accent"></span>SETTINGS APP (GUI)</div>
+            <ol class="space-y-4" id="winSteps"></ol>
+          </div>
+          <div class="space-y-5">
+            <div class="glass rounded-2xl p-6">
+              <div class="flex items-center gap-2 text-[12px] text-accent font-semibold mb-4"><span class="w-1.5 h-1.5 rounded-full bg-accent"></span>POWERSHELL (ADMIN)</div>
+              <p class="text-[13px] text-white/55 mb-3">Replace <span class="mono text-white/70">"Wi-Fi"</span> with your adapter name if needed.</p>
+              <div class="code-block"></div>
+            </div>
+            <div class="glass rounded-2xl p-6">
+              <div class="flex items-center gap-2 text-[12px] text-amber-300/90 font-semibold mb-3"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>FLUSH DNS CACHE</div>
+              <p class="text-[13px] text-white/55 mb-3">After changing, clear the resolver cache so the new servers take effect immediately.</p>
+              <div id="winFlush"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- macOS panel -->
+        <div id="macPanel" class="hidden mt-7 grid lg:grid-cols-2 gap-5">
+          <div class="glass rounded-2xl p-6">
+            <div class="flex items-center gap-2 text-[12px] text-accent font-semibold mb-4"><span class="w-1.5 h-1.5 rounded-full bg-accent"></span>SYSTEM SETTINGS (GUI)</div>
+            <ol class="space-y-4" id="macSteps"></ol>
+          </div>
+          <div class="space-y-5">
+            <div class="glass rounded-2xl p-6">
+              <div class="flex items-center gap-2 text-[12px] text-accent font-semibold mb-4"><span class="w-1.5 h-1.5 rounded-full bg-accent"></span>TERMINAL</div>
+              <p class="text-[13px] text-white/55 mb-3">Sets DNS for the <span class="mono text-white/70">Wi-Fi</span> service. Change the service name if you use Ethernet.</p>
+              <div id="macTerm"></div>
+            </div>
+            <div class="glass rounded-2xl p-6">
+              <div class="flex items-center gap-2 text-[12px] text-amber-300/90 font-semibold mb-3"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>FLUSH DNS CACHE</div>
+              <p class="text-[13px] text-white/55 mb-3">Clear the macOS DNS cache to apply changes right away.</p>
+              <div id="macFlush"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AD ZONE (after benchmark) — footer leaderboard -->
+      <aside class="ad-slot ad-leaderboard w-full mt-14" aria-label="Advertisement" data-ad-slot="results-bottom">
+        <span class="ad-label">Advertisement</span>
+        <span class="ad-hint">Ad space · responsive banner</span>
+      </aside>
+
+      <!-- disclaimer -->
+      <p class="mt-12 text-center text-[12px] text-white/30 max-w-2xl mx-auto leading-relaxed">
+        Browser-based tests provide excellent guidance but are not identical to native system ping tests.
+        Measurements reflect DNS-over-HTTPS round-trip time from your browser and may vary between runs and networks.
+      </p>
+    </section>
+  </main>
+
+  <!-- ============ HELPFUL CONTENT / SEO ============ -->
+  <section id="learn" class="relative z-10 border-t border-white/[0.07]">
+    <div class="max-w-3xl mx-auto px-6 lg:px-8 py-16">
+      <article class="space-y-10">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-white">What is DNS Benchmark Pro?</h2>
+          <p class="mt-3 text-white/60 leading-relaxed">
+            DNS Benchmark Pro is a free DNS benchmark and speed test that measures how fast the world's leading public
+            DNS resolvers respond from <em>your</em> connection. Instead of guessing, it runs real
+            <strong class="text-white/80">DNS-over-HTTPS (DoH)</strong> latency tests against 35+ providers — including
+            Cloudflare, Google Public DNS, Quad9, OpenDNS, AdGuard, Mullvad and Control D — then ranks them and recommends
+            the fastest, most reliable DNS for your location, complete with one-click setup steps for Windows and macOS.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-bold tracking-tight text-white">How the DNS speed test works</h2>
+          <p class="mt-3 text-white/60 leading-relaxed">
+            When you click <span class="text-accent">Detect Location &amp; Benchmark DNS</span>, the tool sends several
+            timed DoH requests to each provider, discards a warm-up and the slowest outlier, then computes three numbers:
+          </p>
+          <ul class="mt-4 space-y-2 text-white/60">
+            <li class="flex gap-2"><span class="text-accent">•</span> <span><strong class="text-white/80">Average latency</strong> — the typical round-trip response time in milliseconds. Lower is faster.</span></li>
+            <li class="flex gap-2"><span class="text-accent">•</span> <span><strong class="text-white/80">Jitter</strong> — how much response times vary between requests. Lower means more consistent.</span></li>
+            <li class="flex gap-2"><span class="text-accent">•</span> <span><strong class="text-white/80">Overall score (out of 100)</strong> — a weighted blend of speed (70%) and consistency (30%), normalized across every resolver that responded.</span></li>
+          </ul>
+          <p class="mt-4 text-white/60 leading-relaxed">
+            All testing runs entirely in your browser. Nothing is installed, and your results are not stored on our servers —
+            see our <a href="privacy.html" class="text-accent underline underline-offset-2">Privacy Policy</a> for details.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-bold tracking-tight text-white">Why your DNS resolver speed matters</h2>
+          <p class="mt-3 text-white/60 leading-relaxed">
+            Every time you open a website or app, your device first asks a DNS resolver to translate the domain name into an
+            IP address. A slow or unreliable resolver adds delay before anything else can load — and modern pages trigger
+            dozens of these lookups. Switching to a faster, well-run public DNS can make browsing feel noticeably snappier,
+            improve reliability, and in many cases add privacy or filtering benefits. It won't increase your raw bandwidth,
+            but it removes a hidden bottleneck that affects almost everything you do online.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-xl font-bold tracking-tight text-white">Frequently asked questions</h2>
+          <div class="mt-4 space-y-5">
+            <div>
+              <h3 class="font-semibold text-white">What is the fastest free DNS server?</h3>
+              <p class="mt-1.5 text-white/60 leading-relaxed">It depends on your location and network, which is exactly what this tool measures. In most regions Cloudflare (1.1.1.1), Google (8.8.8.8) and Quad9 (9.9.9.9) rank among the fastest, but the only way to know your fastest is to benchmark from your own connection.</p>
+            </div>
+            <div>
+              <h3 class="font-semibold text-white">Is it safe to change my DNS server?</h3>
+              <p class="mt-1.5 text-white/60 leading-relaxed">Yes. Changing DNS only affects how domain names are looked up; it does not expose your data and you can revert to automatic (DHCP) settings at any time. Note your current settings before changing them.</p>
+            </div>
+            <div>
+              <h3 class="font-semibold text-white">Does a faster DNS make my internet faster?</h3>
+              <p class="mt-1.5 text-white/60 leading-relaxed">It will not increase your bandwidth, but a faster, more reliable resolver reduces the delay before pages and apps start loading, which makes browsing feel noticeably snappier — especially on sites that pull from many domains.</p>
+            </div>
+            <div>
+              <h3 class="font-semibold text-white">What is DNS-over-HTTPS (DoH)?</h3>
+              <p class="mt-1.5 text-white/60 leading-relaxed">DNS-over-HTTPS encrypts DNS queries inside HTTPS so they cannot be read or tampered with on the network. DNS Benchmark Pro uses DoH endpoints to measure each resolver securely and accurately from your browser.</p>
+            </div>
+            <div>
+              <h3 class="font-semibold text-white">How accurate is a browser-based DNS benchmark?</h3>
+              <p class="mt-1.5 text-white/60 leading-relaxed">It provides excellent guidance. Browser tests measure real DoH round-trip time from your device, though they are not identical to native system queries and can vary between runs and networks.</p>
+            </div>
+            <div>
+              <h3 class="font-semibold text-white">Which DNS is best for privacy?</h3>
+              <p class="mt-1.5 text-white/60 leading-relaxed">Resolvers such as Mullvad, Quad9 and DNS0.eu have strong no-logging or privacy policies. DNS Benchmark Pro labels each resolver's filtering and privacy characteristics so you can balance speed against privacy.</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-[12.5px] text-white/35 border-t border-white/[0.06] pt-5">
+          Published by Genext Information Systems · Last updated June 19, 2026. DNS Benchmark Pro is an independent tool and is not affiliated with any DNS provider listed.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer role="contentinfo" class="relative z-10 border-t border-white/[0.07] mt-8">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+      <div class="flex flex-col md:flex-row gap-8 md:items-start justify-between">
+        <div class="max-w-sm">
+          <div class="flex items-center gap-2.5 mb-3">
+            <div class="w-7 h-7 rounded-lg grid place-items-center" style="background:linear-gradient(180deg,#00E5FF,#00B8D4)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#04121A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg>
+            </div>
+            <span class="font-bold tracking-tight text-sm">DNS Benchmark <span class="text-accent">Pro</span></span>
+          </div>
+          <p class="text-[12.5px] text-white/40 leading-relaxed">
+            Independent, browser-based DNS performance testing. We are not affiliated with or endorsed by any DNS provider listed.
+          </p>
+        </div>
+
+        <nav aria-label="Footer" class="grid grid-cols-2 sm:grid-cols-3 gap-x-10 gap-y-2 text-[13px]">
+          <div class="flex flex-col gap-2">
+            <span class="text-[11px] uppercase tracking-wider text-white/30 mb-1">Legal</span>
+            <a href="privacy.html" class="footer-link text-white/55">Privacy Policy</a>
+            <a href="cookie-policy.html" class="footer-link text-white/55">Cookie Policy</a>
+            <a href="terms.html" class="footer-link text-white/55">Terms &amp; Disclaimer</a>
+          </div>
+          <div class="flex flex-col gap-2">
+            <span class="text-[11px] uppercase tracking-wider text-white/30 mb-1">Site</span>
+            <a href="index.html" class="footer-link text-white/55">Run benchmark</a>
+            <a href="about.html" class="footer-link text-white/55">About</a>
+            <a href="contact.html" class="footer-link text-white/55">Contact</a>
+            <a href="accessibility.html" class="footer-link text-white/55">Accessibility</a>
+            <button id="manageCookies" class="footer-link text-white/55 text-left">Cookie settings</button>
+          </div>
+          <div class="flex flex-col gap-2">
+            <span class="text-[11px] uppercase tracking-wider text-white/30 mb-1">Contact</span>
+            <a href="contact.html" class="footer-link text-white/55">Contact page</a>
+            <a href="mailto:support@dnsbenchmarkpro.com" class="footer-link text-white/55">support@dnsbenchmarkpro.com</a>
+            <a href="mailto:privacy@dnsbenchmarkpro.com" class="footer-link text-white/55">privacy@dnsbenchmarkpro.com</a>
+          </div>
+        </nav>
+      </div>
+
+      <div class="mt-9 pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row gap-3 items-center justify-between text-[12px] text-white/35">
+        <p>© 2026 Genext Information Systems. All rights reserved.</p>
+        <p>DNSBenchmarkPro.com — DNS Benchmark Pro™</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ COOKIE CONSENT ============ -->
+  <div id="consent" role="dialog" aria-modal="false" aria-labelledby="consentTitle" aria-describedby="consentDesc">
+    <div class="glass rounded-2xl p-5 shadow-2xl" style="box-shadow:0 30px 80px -20px rgba(0,0,0,.8)">
+      <h2 id="consentTitle" class="font-semibold text-[15px] mb-1.5 flex items-center gap-2">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9" r="1"/><circle cx="14" cy="14" r="1"/><circle cx="15" cy="9" r="1"/></svg>
+        We value your privacy
+      </h2>
+      <p id="consentDesc" class="text-[12.5px] text-white/55 leading-relaxed">
+        We use essential cookies to run this site and, with your consent, advertising cookies (Google AdSense) and analytics to support our free service.
+        See our <a href="cookie-policy.html" class="text-accent underline">Cookie Policy</a> and <a href="privacy.html" class="text-accent underline">Privacy Policy</a>.
+      </p>
+      <div class="mt-4 flex flex-wrap gap-2.5">
+        <button id="consentAccept" class="consent-btn cta rounded-xl px-5 py-2.5 text-sm font-bold">Accept all</button>
+        <button id="consentReject" class="consent-btn rounded-xl px-5 py-2.5 text-sm font-semibold glass text-white/80 hover:border-white/30">Reject non-essential</button>
+        <button id="consentSave" class="consent-btn rounded-xl px-4 py-2.5 text-sm font-medium text-white/50 hover:text-accent">Save preferences</button>
+      </div>
+      <div id="consentPrefs" class="hidden mt-4 pt-4 border-t border-white/[0.08] space-y-3 text-[13px]">
+        <label class="flex items-start gap-3 opacity-60 cursor-not-allowed">
+          <input type="checkbox" checked disabled class="mt-0.5 accent-[#00E5FF]" />
+          <span><b class="text-white/80">Essential</b> — required for the site to function. Always on.</span>
+        </label>
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input id="prefAds" type="checkbox" class="mt-0.5 accent-[#00E5FF]" />
+          <span><b class="text-white/80">Advertising</b> — Google AdSense cookies used to show and measure ads.</span>
+        </label>
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input id="prefAnalytics" type="checkbox" class="mt-0.5 accent-[#00E5FF]" />
+          <span><b class="text-white/80">Analytics</b> — anonymous usage statistics to improve the tool.</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- toast -->
+  <div id="toast" class="toast glass rounded-xl px-4 py-3 text-sm font-medium flex items-center gap-2">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    <span id="toastMsg">Copied to clipboard</span>
+  </div>
+
+<script>
+/* ============================================================
+   DNS Benchmark Pro — client-side DoH latency benchmarking
+   ============================================================ */
+
+/* Vetted public resolvers — every entry has BOTH published IPv4 addresses
+   (so it can be applied in OS settings) AND a DNS-over-HTTPS endpoint
+   (so it can be benchmarked from the browser). */
+const PROVIDERS = [
+  // Cloudflare
+  { id:'cf',        name:'Cloudflare',            primary:'1.1.1.1',        secondary:'1.0.0.1',         note:'No filtering',            color:'#F38020', letter:'C', doh:'https://cloudflare-dns.com/dns-query' },
+  { id:'cf-sec',    name:'Cloudflare Security',   primary:'1.1.1.2',        secondary:'1.0.0.2',         note:'Blocks malware',          color:'#F38020', letter:'C', doh:'https://security.cloudflare-dns.com/dns-query' },
+  { id:'cf-fam',    name:'Cloudflare Family',     primary:'1.1.1.3',        secondary:'1.0.0.3',         note:'Malware + adult',         color:'#F38020', letter:'C', doh:'https://family.cloudflare-dns.com/dns-query' },
+  // Google
+  { id:'google',    name:'Google Public DNS',     primary:'8.8.8.8',        secondary:'8.8.4.4',         note:'No filtering',            color:'#4285F4', letter:'G', doh:'https://dns.google/resolve' },
+  // Quad9
+  { id:'quad9',     name:'Quad9',                 primary:'9.9.9.9',        secondary:'149.112.112.112', note:'Malware + DNSSEC',        color:'#9C27B0', letter:'Q', doh:'https://dns.quad9.net/dns-query' },
+  { id:'quad9-uf',  name:'Quad9 Unsecured',       primary:'9.9.9.10',       secondary:'149.112.112.10',  note:'No filtering',            color:'#9C27B0', letter:'Q', doh:'https://dns10.quad9.net/dns-query' },
+  { id:'quad9-ecs', name:'Quad9 + ECS',           primary:'9.9.9.11',       secondary:'149.112.112.11',  note:'Malware + ECS',           color:'#9C27B0', letter:'Q', doh:'https://dns11.quad9.net/dns-query' },
+  // OpenDNS
+  { id:'opendns',   name:'OpenDNS Home',          primary:'208.67.222.222', secondary:'208.67.220.220',  note:'Configurable filtering',  color:'#EF4444', letter:'O', doh:'https://doh.opendns.com/dns-query' },
+  // AdGuard
+  { id:'adguard',   name:'AdGuard DNS',           primary:'94.140.14.14',   secondary:'94.140.15.15',    note:'Ads + trackers',          color:'#67B279', letter:'A', doh:'https://dns.adguard-dns.com/dns-query' },
+  { id:'adg-fam',   name:'AdGuard Family',        primary:'94.140.14.15',   secondary:'94.140.15.16',    note:'Ads + adult',             color:'#67B279', letter:'A', doh:'https://family.adguard-dns.com/dns-query' },
+  { id:'adg-uf',    name:'AdGuard Non-filtering', primary:'94.140.14.140',  secondary:'94.140.14.141',   note:'No filtering',            color:'#67B279', letter:'A', doh:'https://unfiltered.adguard-dns.com/dns-query' },
+  // Mullvad
+  { id:'mullvad',   name:'Mullvad DNS',           primary:'194.242.2.2',    secondary:'193.19.108.2',    note:'No filtering, no logs',   color:'#FFD43B', letter:'M', doh:'https://dns.mullvad.net/dns-query' },
+  // Control D (free profiles)
+  { id:'ctd-uf',    name:'Control D Unfiltered',  primary:'76.76.2.0',      secondary:'76.76.10.0',      note:'No filtering',            color:'#22D3EE', letter:'D', doh:'https://freedns.controld.com/p0' },
+  { id:'ctd-mal',   name:'Control D Malware',     primary:'76.76.2.1',      secondary:'76.76.10.1',      note:'Blocks malware',          color:'#22D3EE', letter:'D', doh:'https://freedns.controld.com/p1' },
+  { id:'ctd-ads',   name:'Control D Ad-Block',    primary:'76.76.2.2',      secondary:'76.76.10.2',      note:'Ads + trackers',          color:'#22D3EE', letter:'D', doh:'https://freedns.controld.com/p2' },
+  { id:'ctd-soc',   name:'Control D Social',      primary:'76.76.2.3',      secondary:'76.76.10.3',      note:'Ads + social',            color:'#22D3EE', letter:'D', doh:'https://freedns.controld.com/p3' },
+  // NextDNS
+  { id:'nextdns',   name:'NextDNS',               primary:'45.90.28.0',     secondary:'45.90.30.0',      note:'Configurable',            color:'#2EC4B6', letter:'N', doh:'https://dns.nextdns.io' },
+  // CleanBrowsing
+  { id:'cb-sec',    name:'CleanBrowsing Security',primary:'185.228.168.9',  secondary:'185.228.169.9',   note:'Blocks malware',          color:'#3B82F6', letter:'B', doh:'https://doh.cleanbrowsing.org/doh/security-filter' },
+  { id:'cb-fam',    name:'CleanBrowsing Family',  primary:'185.228.168.168',secondary:'185.228.169.168', note:'Family filter',           color:'#3B82F6', letter:'B', doh:'https://doh.cleanbrowsing.org/doh/family-filter' },
+  { id:'cb-adt',    name:'CleanBrowsing Adult',   primary:'185.228.168.10', secondary:'185.228.169.11',  note:'Blocks adult',            color:'#3B82F6', letter:'B', doh:'https://doh.cleanbrowsing.org/doh/adult-filter' },
+  // DNS0.eu
+  { id:'dns0',      name:'DNS0.eu',               primary:'193.110.81.0',   secondary:'185.253.5.0',     note:'EU, malware filter',      color:'#00E5FF', letter:'0', doh:'https://zero.dns0.eu' },
+  { id:'dns0-kids', name:'DNS0.eu Kids',          primary:'193.110.81.1',   secondary:'185.253.5.1',     note:'EU, family filter',       color:'#00E5FF', letter:'0', doh:'https://kids.dns0.eu' },
+  { id:'dns0-open', name:'DNS0.eu Open',          primary:'193.110.81.9',   secondary:'185.253.5.9',     note:'EU, no filtering',        color:'#00E5FF', letter:'0', doh:'https://open.dns0.eu' },
+  // CIRA Canadian Shield
+  { id:'cira-priv', name:'CIRA Shield Private',   primary:'149.112.121.10', secondary:'149.112.122.10',  note:'CA, no filtering',        color:'#E11D48', letter:'S', doh:'https://private.canadianshield.cira.ca/dns-query' },
+  { id:'cira-prot', name:'CIRA Shield Protected', primary:'149.112.121.20', secondary:'149.112.122.20',  note:'CA, malware filter',      color:'#E11D48', letter:'S', doh:'https://protected.canadianshield.cira.ca/dns-query' },
+  { id:'cira-fam',  name:'CIRA Shield Family',    primary:'149.112.121.30', secondary:'149.112.122.30',  note:'CA, family filter',       color:'#E11D48', letter:'S', doh:'https://family.canadianshield.cira.ca/dns-query' },
+  // Others
+  { id:'dnssb',     name:'DNS.SB',                primary:'185.222.222.222',secondary:'45.11.45.11',     note:'No filtering, no logs',   color:'#A78BFA', letter:'S', doh:'https://doh.dns.sb/dns-query' },
+  { id:'alidns',    name:'AliDNS',                primary:'223.5.5.5',      secondary:'223.6.6.6',       note:'Asia, malware filter',    color:'#F59E0B', letter:'A', doh:'https://dns.alidns.com/dns-query' },
+  { id:'dnspod',    name:'DNSPod Public',         primary:'119.29.29.29',   secondary:'182.254.116.116', note:'Asia, no filtering',      color:'#10B981', letter:'P', doh:'https://doh.pub/dns-query' },
+  { id:'gcore',     name:'Gcore DNS',             primary:'95.85.95.85',    secondary:'2.56.220.2',      note:'No filtering',            color:'#F97316', letter:'G', doh:'https://dns.gcore.com/dns-query' },
+  { id:'digitale',  name:'Digitale Gesellschaft', primary:'185.95.218.42',  secondary:'185.95.218.43',   note:'CH, no logging',          color:'#94A3B8', letter:'D', doh:'https://dns.digitale-gesellschaft.ch/dns-query' },
+  { id:'quad101',   name:'Quad101 (TWNIC)',       primary:'101.101.101.101',secondary:'101.102.103.104', note:'TW, no logging',          color:'#38BDF8', letter:'1', doh:'https://dns.twnic.tw/dns-query' },
+  { id:'ffmuc',     name:'ffmuc.net',             primary:'5.1.66.255',     secondary:'185.150.99.255',  note:'DE, no filtering',        color:'#FB7185', letter:'F', doh:'https://doh.ffmuc.net/dns-query' },
+  { id:'switch',    name:'SWITCH DNS',            primary:'130.59.31.248',  secondary:'130.59.31.251',   note:'CH, malware filter',      color:'#FACC15', letter:'W', doh:'https://dns.switch.ch/dns-query' },
+  { id:'dff',       name:'DNS for Family',        primary:'94.130.180.225', secondary:'78.47.64.161',    note:'Family filter',           color:'#C084FC', letter:'F', doh:'https://dns-doh.dnsforfamily.com/dns-query' },
+];
+
+const RUNS = 3;                 // timed requests per provider
+const CONCURRENCY = 12;         // providers benchmarked in parallel
+const DISPLAY_TOP = 10;         // rows shown in the results table
+const TIMEOUT_MS = 2000;        // per-request timeout
+const TEST_DOMAINS = ['example.com','wikipedia.org','github.com','cloudflare.com','akamai.com'];
+
+const $ = (id) => document.getElementById(id);
+let results = [];
+let currentSort = 'score';
+let recommended = null;
+
+/* ---------------- helpers ---------------- */
+function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function mean(a){ return a.reduce((s,x)=>s+x,0)/a.length; }
+function stddev(a){ if(a.length<2) return 0; const m=mean(a); return Math.sqrt(mean(a.map(x=>(x-m)**2))); }
+
+function buildUrl(p){
+  const name = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${rand(TEST_DOMAINS)}`;
+  // cache-busting random subdomain forces real resolver work; param style works for both /resolve and /dns-query
+  return `${p.doh}?name=${encodeURIComponent(name)}&type=A&_=${Math.random()}`;
+}
+
+// Time a single DoH round trip. Uses no-cors so timing is valid regardless of
+// the provider's CORS policy (the fetch still resolves when the network RTT completes).
+function timeOne(p){
+  return new Promise((resolve)=>{
+    const ctrl = new AbortController();
+    const t0 = performance.now();
+    const to = setTimeout(()=>{ ctrl.abort(); resolve(null); }, TIMEOUT_MS);
+    fetch(buildUrl(p), { mode:'no-cors', cache:'no-store', signal:ctrl.signal, referrerPolicy:'no-referrer' })
+      .then(()=>{ clearTimeout(to); resolve(performance.now()-t0); })
+      .catch(()=>{ clearTimeout(to); resolve(null); });
+  });
+}
+
+const DEAD = (p) => ({ ...p, latency:null, jitter:null, score:0, samples:0, reachable:false });
+
+async function benchmarkProvider(p){
+  // Probe + warm-up. If the first two attempts both fail, treat as unreachable.
+  // This caps wasted time on dead/blocked hosts at ~2 timeouts instead of RUNS+1.
+  const warm = await timeOne(p);
+  if(warm===null){
+    const retry = await timeOne(p);
+    if(retry===null) return DEAD(p);
+  }
+  const samples = [];
+  for(let i=0;i<RUNS;i++){
+    const t = await timeOne(p);
+    if(t!==null) samples.push(t);
+  }
+  if(samples.length===0) return DEAD(p);
+  // drop the single worst sample to reduce outlier noise when we have enough data
+  let s = samples.slice().sort((a,b)=>a-b);
+  if(s.length>=4) s = s.slice(0, s.length-1);
+  return { ...p, latency:mean(s), jitter:stddev(s),
+           min:Math.min(...samples), max:Math.max(...samples),
+           samples:samples.length, reachable:true, _raw:s };
+}
+
+// Bounded-concurrency pool: runs `worker` over `items`, at most `limit` at once.
+async function runPool(items, limit, worker, onProgress){
+  const out = new Array(items.length);
+  let next = 0, done = 0;
+  async function lane(){
+    while(true){
+      const idx = next++;
+      if(idx >= items.length) return;
+      out[idx] = await worker(items[idx], idx);
+      done++;
+      if(onProgress) onProgress(done, items.length);
+    }
+  }
+  await Promise.all(Array.from({length: Math.min(limit, items.length)}, lane));
+  return out;
+}
+
+// Scoring: 70% latency, 30% consistency (jitter), scaled to 0-100 across the field.
+function scoreAll(list){
+  const reach = list.filter(r=>r.reachable);
+  if(reach.length===0) return list.map(r=>({...r,score:0}));
+  const lats = reach.map(r=>r.latency);
+  const jits = reach.map(r=>r.jitter);
+  const minL=Math.min(...lats), maxL=Math.max(...lats);
+  const minJ=Math.min(...jits), maxJ=Math.max(...jits);
+  return list.map(r=>{
+    if(!r.reachable) return {...r, score:0};
+    const latNorm = maxL===minL ? 1 : 1-((r.latency-minL)/(maxL-minL)); // 1=best
+    const jitNorm = maxJ===minJ ? 1 : 1-((r.jitter-minJ)/(maxJ-minJ));
+    let score = Math.round((latNorm*0.7 + jitNorm*0.3)*100);
+    // give the absolute fastest a guaranteed strong score, floor reachable ones
+    score = Math.max(score, 35);
+    if(r.latency===minL) score = Math.max(score, 96);
+    return {...r, score:Math.min(100,score)};
+  });
+}
+
+/* ---------------- geolocation ---------------- */
+async function reverseGeocode(lat, lon){
+  try{
+    const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+    const d = await r.json();
+    const city = d.city || d.locality || d.principalSubdivision || '';
+    const region = d.principalSubdivision || '';
+    const country = d.countryName || '';
+    return { city, region, country, precise:true };
+  }catch(e){ return null; }
+}
+async function ipGeo(){
+  try{
+    const r = await fetch('https://ipwho.is/');
+    const d = await r.json();
+    if(d && d.success!==false) return { city:d.city, region:d.region, country:d.country, isp:d.connection&&d.connection.isp, precise:false };
+  }catch(e){}
+  try{
+    const r = await fetch('https://ipapi.co/json/');
+    const d = await r.json();
+    return { city:d.city, region:d.region, country:d.country_name, isp:d.org, precise:false };
+  }catch(e){}
+  return null;
+}
+function getLocation(){
+  return new Promise((resolve)=>{
+    if(!navigator.geolocation){ ipGeo().then(resolve); return; }
+    navigator.geolocation.getCurrentPosition(
+      async (pos)=>{
+        const loc = await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+        resolve(loc || await ipGeo());
+      },
+      async ()=>{ resolve(await ipGeo()); },
+      { timeout:6000, maximumAge:600000, enableHighAccuracy:false }
+    );
+  });
+}
+
+/* ---------------- UI: loading ---------------- */
+const STEP_DEFS = [
+  { key:'loc',  label:'Detecting your location' },
+  { key:'init', label:'Establishing secure DoH channels' },
+  { key:'bench',label:`Benchmarking ${PROVIDERS.length} public DNS providers` },
+  { key:'analyze', label:'Analyzing latency & consistency' },
+];
+function renderLoadSteps(activeIdx){
+  $('loadSteps').innerHTML = STEP_DEFS.map((s,i)=>{
+    const done = i<activeIdx, active = i===activeIdx;
+    const icon = done
+      ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`
+      : active
+        ? `<svg class="ring-spin" width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="2.5"/><circle cx="8" cy="8" r="6" fill="none" stroke="#00E5FF" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="12 30"/></svg>`
+        : `<span class="w-2 h-2 rounded-full bg-white/20"></span>`;
+    return `<div class="glass rounded-xl px-4 py-3 flex items-center gap-3 ${active?'border-accent/40':''}" style="${active?'border-color:rgba(0,229,255,.4)':''}">
+      <span class="w-5 h-5 grid place-items-center shrink-0">${icon}</span>
+      <span class="text-sm ${done?'text-white/45':active?'text-white':'text-white/35'}">${s.label}</span>
+    </div>`;
+  }).join('');
+}
+function setProgress(pct, title, sub){
+  $('loadPct').textContent = Math.round(pct)+'%';
+  if(title) $('loadTitle').textContent = title;
+  if(sub) $('loadSub').textContent = sub;
+}
+
+/* ---------------- UI: results ---------------- */
+function fmt(n,d=0){ return n==null?'—':n.toFixed(d); }
+
+function scoreColor(s){
+  if(s>=90) return '#00E5FF';
+  if(s>=75) return '#34D399';
+  if(s>=55) return '#FBBF24';
+  return '#F87171';
+}
+
+function rowHTML(r, rank, isBest){
+  const best = !!isBest;
+  const unreachable = !r.reachable;
+  const sc = r.score;
+  const ringLen = 2*Math.PI*16;
+  const off = ringLen*(1-sc/100);
+  return `
+  <div class="grid grid-cols-2 md:grid-cols-12 gap-3 items-center px-5 py-4 border-b border-white/[0.05] ${best?'bg-accent/[0.06]':''} hover:bg-white/[0.02] transition">
+    <div class="md:col-span-1 row-rank font-bold ${best?'text-accent':'text-white/40'} flex items-center gap-2">
+      ${best?'<span class="text-accent">★</span>':`<span>${rank+1}</span>`}
+    </div>
+    <div class="md:col-span-3 flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg grid place-items-center font-bold text-sm shrink-0" style="background:${r.color}22;color:${r.color};border:1px solid ${r.color}55">${r.letter}</div>
+      <div class="min-w-0">
+        <div class="font-semibold text-[14px] truncate flex items-center gap-2">${r.name}${best?'<span class="text-[10px] font-bold tracking-wider text-accent bg-accent/10 border border-accent/30 rounded px-1.5 py-0.5">BEST</span>':''}</div>
+        <div class="text-[11px] text-white/35">${unreachable?'<span class="text-rose-400/80">No response</span>':(r.note||'Public resolver')}</div>
+      </div>
+    </div>
+    <div class="md:col-span-3 flex items-center gap-2">
+      <button class="copy-btn mono text-[12px] bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 rounded-md px-2 py-1 flex items-center gap-1.5" data-copy><span>${r.primary}</span><span class="text-white/30">⧉</span></button>
+      <button class="copy-btn mono text-[12px] bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 rounded-md px-2 py-1 flex items-center gap-1.5" data-copy><span>${r.secondary}</span><span class="text-white/30">⧉</span></button>
+    </div>
+    <div class="md:col-span-2">
+      <div class="flex items-baseline gap-1"><span class="text-lg font-bold mono" style="color:${unreachable?'#71717A':'#fff'}">${unreachable?'—':fmt(r.latency,1)}</span><span class="text-[11px] text-white/35">ms</span></div>
+      <div class="mt-1 h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
+        <div class="bar-fill h-full rounded-full" style="width:0%;background:${scoreColor(sc)}" data-bar="${unreachable?0:Math.max(6,sc)}"></div>
+      </div>
+    </div>
+    <div class="md:col-span-1">
+      <div class="text-[13px] font-semibold mono" style="color:${unreachable?'#71717A':'#fff'}">${unreachable?'—':'±'+fmt(r.jitter,1)}</div>
+      <div class="text-[10px] text-white/30">ms</div>
+    </div>
+    <div class="md:col-span-2 flex items-center justify-end gap-3">
+      <div class="text-right">
+        <div class="text-xl font-extrabold mono" style="color:${scoreColor(sc)}">${unreachable?'0':sc}</div>
+        <div class="text-[10px] text-white/30">/ 100</div>
+      </div>
+      <svg width="44" height="44" viewBox="0 0 44 44" class="shrink-0">
+        <circle cx="22" cy="22" r="16" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="4"/>
+        <circle class="score-ring" cx="22" cy="22" r="16" fill="none" stroke="${scoreColor(sc)}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${ringLen}" stroke-dashoffset="${ringLen}" data-ring="${off}" transform="rotate(-90 22 22)"/>
+      </svg>
+    </div>
+  </div>`;
+}
+
+// Top reachable resolvers by score — this is the leaderboard membership.
+function topReachable(){
+  return results.filter(r=>r.reachable).sort((a,b)=>b.score-a.score).slice(0, DISPLAY_TOP);
+}
+
+function renderResults(){
+  const top = topReachable();
+  const rows = top.slice();
+  if(currentSort==='latency')      rows.sort((a,b)=>a.latency-b.latency);
+  else if(currentSort==='jitter')  rows.sort((a,b)=>a.jitter-b.jitter);
+  else                             rows.sort((a,b)=>b.score-a.score);
+
+  $('resultsRows').innerHTML = rows.map((r,i)=>rowHTML(r, i, recommended && r.id===recommended.id)).join('');
+
+  const reachCount = results.filter(r=>r.reachable).length;
+  const sub = $('rankSub');
+  if(sub) sub.textContent = `Tested ${results.length} resolvers · ${reachCount} responded · showing top ${rows.length} · lower latency & jitter is better`;
+
+  // animate bars & rings after paint
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('[data-bar]').forEach(el=>{ el.style.width = el.dataset.bar+'%'; });
+    document.querySelectorAll('[data-ring]').forEach(el=>{ el.style.strokeDashoffset = el.dataset.ring; });
+  });
+}
+
+/* ---------------- full-field latency chart ---------------- */
+function niceAxisMax(v){
+  const candidates = [50,100,150,200,250,300,400,500,600,800,1000,1500,2000,3000];
+  const target = v * 1.08;
+  for(const c of candidates){ if(c >= target) return c; }
+  return Math.ceil(target/1000)*1000;
+}
+function barColor(norm){ // 0 = fastest (green), 1 = slowest (red)
+  const hue = 146 * (1 - Math.max(0, Math.min(1, norm)));
+  return `hsl(${hue.toFixed(0)} 68% 47%)`;
+}
+
+function renderChart(){
+  const host = $('latencyChart');
+  if(!host) return;
+  const data = results.filter(r=>r.reachable).sort((a,b)=>a.latency-b.latency);
+  const sub = $('chartSub');
+  if(!data.length){ host.innerHTML = '<p class="text-white/40 text-sm py-6 text-center">No resolvers responded on this network.</p>'; return; }
+  if(sub) sub.textContent = `${data.length} resolvers responded, fastest first · hover a bar for avg / min / max`;
+
+  const lats = data.map(d=>d.latency);
+  const minL = Math.min(...lats), maxL = Math.max(...lats);
+  const axisMax = niceAxisMax(maxL);
+
+  const W=1000, padL=210, padR=26, padT=8, padB=42, rowH=22, barGap=7;
+  const plotW = W - padL - padR;
+  const H = padT + data.length*rowH + padB;
+  const x = (v)=> padL + (v/axisMax)*plotW;
+
+  const ticks = 6;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Response time by DNS provider" style="display:block">`;
+
+  // gridlines + tick labels
+  for(let i=0;i<=ticks;i++){
+    const val = Math.round(axisMax*i/ticks);
+    const gx = x(val);
+    svg += `<line class="ch-grid" x1="${gx.toFixed(1)}" y1="${padT}" x2="${gx.toFixed(1)}" y2="${padT+data.length*rowH}"/>`;
+    svg += `<text class="ch-tick" x="${gx.toFixed(1)}" y="${H-padB+20}" text-anchor="middle">${val}ms</text>`;
+  }
+  // baseline
+  svg += `<line class="ch-base" x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+data.length*rowH}"/>`;
+
+  // bars
+  data.forEach((d,i)=>{
+    const y = padT + i*rowH;
+    const bh = rowH - barGap;
+    const norm = (maxL===minL) ? 0 : (d.latency-minL)/(maxL-minL);
+    const fill = barColor(norm);
+    const bw = Math.max(2, (d.latency/axisMax)*plotW);
+    const label = d.name.length>26 ? d.name.slice(0,25)+'…' : d.name;
+    svg += `<text class="ch-label" x="${padL-10}" y="${y+bh/2}" text-anchor="end" dominant-baseline="central">${label}</text>`;
+    svg += `<g class="ch-row" data-i="${i}">`
+        +    `<rect x="${padL}" y="${y-barGap/2}" width="${plotW}" height="${rowH}" fill="transparent"/>`
+        +    `<rect class="ch-bar" x="${padL}" y="${y}" width="${bw.toFixed(1)}" height="${bh}" rx="3" fill="${fill}"/>`
+        +  `</g>`;
+  });
+
+  // axis title
+  svg += `<text class="ch-axis" x="${padL + plotW/2}" y="${H-6}" text-anchor="middle">Response time (ms)</text>`;
+  svg += `</svg>`;
+  host.innerHTML = svg;
+
+  // hover tooltips
+  const wrap = $('chartWrap'), tip = $('chartTip');
+  host.querySelectorAll('.ch-row').forEach(g=>{
+    const d = data[+g.dataset.i];
+    const norm = (maxL===minL) ? 0 : (d.latency-minL)/(maxL-minL);
+    const bar = g.querySelector('.ch-bar');
+    const show = (e)=>{
+      const r = wrap.getBoundingClientRect();
+      tip.innerHTML =
+        `<div class="tt-name">${d.name}</div>`+
+        `<div class="ttrow"><span class="sw" style="background:${barColor(norm)}"></span>Avg: <b>${d.latency.toFixed(2)} ms</b></div>`+
+        `<div class="ttrow">Min: <b>${(d.min ?? d.latency).toFixed(2)} ms</b></div>`+
+        `<div class="ttrow">Max: <b>${(d.max ?? d.latency).toFixed(2)} ms</b></div>`+
+        `<div class="ttrow">Jitter: <b>±${d.jitter.toFixed(2)} ms</b> · Score <b>${d.score}</b></div>`;
+      tip.style.display = 'block';
+      const tw = tip.offsetWidth || 180, th = tip.offsetHeight || 90;
+      let lx = e.clientX - r.left + 16;
+      let ly = e.clientY - r.top + 14;
+      if(lx + tw > r.width) lx = e.clientX - r.left - tw - 14;
+      if(ly + th > r.height) ly = r.height - th - 4;
+      tip.style.left = Math.max(0,lx) + 'px';
+      tip.style.top  = Math.max(0,ly) + 'px';
+      bar.classList.add('hot');
+    };
+    g.addEventListener('mouseenter', show);
+    g.addEventListener('mousemove', show);
+    g.addEventListener('mouseleave', ()=>{ tip.style.display='none'; bar.classList.remove('hot'); });
+  });
+}
+
+function renderRecommendation(){
+  const sorted = [...results].filter(r=>r.reachable).sort((a,b)=>b.score-a.score);
+  recommended = sorted[0] || results[0];
+  $('recName').textContent = recommended.name;
+  $('recPrimary').textContent = recommended.primary;
+  $('recSecondary').textContent = recommended.secondary;
+  const reason = recommended.reachable
+    ? `Fastest overall · ${recommended.latency.toFixed(1)} ms avg · ±${recommended.jitter.toFixed(1)} ms jitter · score ${recommended.score}/100`
+    : `Default recommendation (live test inconclusive on this network)`;
+  $('recReason').textContent = reason;
+  renderSetup(recommended);
+}
+
+/* ---------------- setup instructions ---------------- */
+function copyChip(text){
+  return `<button class="copy-btn mono text-[12px] bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 rounded-md px-2 py-1 inline-flex items-center gap-1.5" data-copy><span>${text}</span><span class="text-white/30">⧉</span></button>`;
+}
+function codeBox(lines, id){
+  return `<div class="relative">
+    <button class="copy-btn absolute top-2.5 right-2.5 text-[11px] bg-white/[0.06] hover:bg-accent/20 border border-white/10 hover:border-accent/40 rounded-md px-2 py-1 flex items-center gap-1.5" data-copy-multiline><span>Copy</span></button>
+    <pre class="mono text-[12.5px] leading-relaxed bg-black/40 border border-white/[0.08] rounded-xl p-4 pr-16 overflow-x-auto text-white/85" id="${id}">${lines.join('\n')}</pre>
+  </div>`;
+}
+
+function renderSetup(rec){
+  const P = rec.primary, S = rec.secondary;
+
+  // Windows GUI steps
+  $('winSteps').innerHTML = [
+    `Open <b class="text-white">Settings → Network &amp; Internet</b>, then select your active connection (Wi-Fi or Ethernet).`,
+    `Click <b class="text-white">Edit</b> next to “DNS server assignment”.`,
+    `Switch the dropdown from <i>Automatic (DHCP)</i> to <b class="text-white">Manual</b>, then toggle <b class="text-white">IPv4</b> on.`,
+    `Enter Preferred DNS: ${copyChip(P)} and Alternate DNS: ${copyChip(S)}`,
+    `Click <b class="text-white">Save</b>, then flush your DNS cache (see right).`,
+  ].map((t,i)=>stepLI(i+1,t)).join('');
+
+  // Windows PowerShell
+  document.querySelector('#winPanel .code-block').innerHTML = codeBox([
+    `Set-DnsClientServerAddress -InterfaceAlias "Wi-Fi" \``,
+    `  -ServerAddresses ("${P}","${S}")`,
+  ], 'winPS');
+
+  // Windows flush
+  $('winFlush').innerHTML = codeBox([`ipconfig /flushdns`], 'winFlush2');
+
+  // macOS GUI steps
+  $('macSteps').innerHTML = [
+    `Open <b class="text-white">System Settings → Network</b>.`,
+    `Select your active service (Wi-Fi / Ethernet) and click <b class="text-white">Details…</b>.`,
+    `Choose the <b class="text-white">DNS</b> tab in the sidebar.`,
+    `Under “DNS Servers”, click <b class="text-white">+</b> and add: ${copyChip(P)} then ${copyChip(S)}`,
+    `Click <b class="text-white">OK</b> → <b class="text-white">Apply</b>, then flush the cache (see right).`,
+  ].map((t,i)=>stepLI(i+1,t)).join('');
+
+  // macOS terminal
+  $('macTerm').innerHTML = codeBox([`sudo networksetup -setdnsservers Wi-Fi ${P} ${S}`], 'macTermPre');
+
+  // macOS flush
+  $('macFlush').innerHTML = codeBox([
+    `sudo dscacheutil -flushcache`,
+    `sudo killall -HUP mDNSResponder`,
+  ], 'macFlushPre');
+}
+function stepLI(n, html){
+  return `<li class="flex gap-3">
+    <span class="shrink-0 w-6 h-6 rounded-full grid place-items-center text-[12px] font-bold mono" style="background:var(--accent-dim);color:#00E5FF;border:1px solid rgba(0,229,255,.3)">${n}</span>
+    <span class="text-[13.5px] text-white/70 leading-relaxed pt-0.5">${html}</span>
+  </li>`;
+}
+
+/* ---------------- clipboard ---------------- */
+let toastTimer;
+function toast(msg){
+  $('toastMsg').textContent = msg;
+  const t = $('toast'); t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 1600);
+}
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); }
+  catch(e){
+    const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); }catch(_){} document.body.removeChild(ta);
+  }
+  toast('Copied: '+text);
+}
+document.addEventListener('click', (e)=>{
+  const single = e.target.closest('[data-copy]');
+  if(single){ const span=single.querySelector('span'); copyText(span?span.textContent.trim():single.textContent.trim()); return; }
+  const multi = e.target.closest('[data-copy-multiline]');
+  if(multi){
+    const pre = multi.parentElement.querySelector('pre');
+    if(pre) copyText(pre.textContent.trim());
+  }
+});
+
+/* ---------------- orchestration ---------------- */
+function show(view){
+  ['heroView','loadingView','resultsView'].forEach(v=>{
+    const el=$(v);
+    if(v===view){ el.classList.remove('hidden'); el.classList.add(v==='loadingView'?'flex':'block'); el.classList.add('view'); }
+    else { el.classList.add('hidden'); el.classList.remove('flex','block','view'); }
+  });
+  if(view!=='resultsView') window.scrollTo({top:0,behavior:'instant'});
+}
+
+async function run(){
+  $('navStatus').textContent = 'Benchmarking…';
+  show('loadingView');
+  renderLoadSteps(0);
+  setProgress(4,'Detecting your location…','Requesting approximate location (you can deny — we’ll fall back to network geolocation).');
+
+  // Step 1: location (run in parallel with channel init)
+  const locP = getLocation();
+
+  renderLoadSteps(1);
+  setProgress(16,'Establishing secure channels…','Opening DNS-over-HTTPS probes to each provider.');
+  await new Promise(r=>setTimeout(r,500));
+
+  // Step 2: benchmark all providers with a bounded-concurrency pool
+  renderLoadSteps(2);
+  const total = PROVIDERS.length;
+  results = await runPool(PROVIDERS, CONCURRENCY, benchmarkProvider, (done)=>{
+    setProgress(20 + (done/total)*62, `Benchmarking ${total} public resolvers…`, `${done} of ${total} complete · up to ${CONCURRENCY} tested in parallel.`);
+  });
+
+  // Step 3: analyze
+  renderLoadSteps(3);
+  setProgress(88,'Analyzing results…','Computing latency, jitter and weighted scores.');
+  results = scoreAll(results);
+  await new Promise(r=>setTimeout(r,450));
+
+  // resolve location
+  const loc = await locP;
+  if(loc){
+    const parts=[loc.city,loc.region].filter(Boolean);
+    $('locName').textContent = parts.length?parts.join(', '):(loc.country||'Your area');
+    const meta=[loc.country, loc.precise?'GPS-approximate':'IP-based'].filter(Boolean);
+    $('locMeta').textContent = meta.join(' · ');
+  } else {
+    $('locName').textContent = 'Location unavailable';
+    $('locMeta').textContent = 'Benchmark still valid for your network';
+  }
+
+  setProgress(100,'Done','Rendering dashboard.');
+  await new Promise(r=>setTimeout(r,300));
+
+  renderRecommendation();
+  renderResults();
+  renderChart();
+  show('resultsView');
+  window.scrollTo({top:0,behavior:'instant'});
+  $('navStatus').textContent = 'Benchmark complete';
+}
+
+/* ---------------- events ---------------- */
+$('startBtn').addEventListener('click', run);
+$('rerunBtn').addEventListener('click', run);
+
+document.querySelectorAll('.sortBtn').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    currentSort = b.dataset.sort;
+    document.querySelectorAll('.sortBtn').forEach(x=>{ x.classList.remove('tab-active'); x.classList.add('text-white/60'); });
+    b.classList.add('tab-active'); b.classList.remove('text-white/60');
+    renderResults();
+  });
+});
+
+document.querySelectorAll('.osTab').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const os=b.dataset.os;
+    document.querySelectorAll('.osTab').forEach(x=>{ x.classList.remove('tab-active'); x.classList.add('text-white/60'); });
+    b.classList.add('tab-active'); b.classList.remove('text-white/60');
+    $('winPanel').classList.toggle('hidden', os!=='win');
+    $('macPanel').classList.toggle('hidden', os!=='mac');
+  });
+});
+
+/* ============================================================
+   Cookie consent + Google AdSense initialization
+   ------------------------------------------------------------
+   SETUP: After your AdSense account is approved, set ADSENSE_CLIENT
+   to your publisher ID (e.g. "ca-pub-XXXXXXXXXXXXXXXX") and map each
+   data-ad-slot to the numeric slot ID from your AdSense dashboard.
+   Ads only load AFTER the visitor consents to advertising cookies.
+   ============================================================ */
+const ADSENSE_CLIENT = "ca-pub-2738929737632064";
+const AD_SLOT_IDS = {       // zone -> AdSense ad-unit slot ID ("dnsbenchmarkpro" unit, reused)
+  "hero-bottom": "6271294259",
+  "results-top": "6271294259", "results-bottom": "6271294259"
+};
+const CONSENT_KEY = "dbp-consent-v1";
+
+function getConsent(){
+  try { return JSON.parse(localStorage.getItem(CONSENT_KEY) || "null"); }
+  catch(e){ return null; }
+}
+function saveConsent(c){
+  try { localStorage.setItem(CONSENT_KEY, JSON.stringify(c)); } catch(e){}
+}
+
+let adsenseLoaded = false;
+function loadAdSenseScript(){
+  if(adsenseLoaded || !ADSENSE_CLIENT) return;
+  adsenseLoaded = true;
+  const s = document.createElement("script");
+  s.async = true;
+  s.crossOrigin = "anonymous";
+  s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + ADSENSE_CLIENT;
+  document.head.appendChild(s);
+}
+function initAds(){
+  const c = getConsent();
+  if(!c || !c.ads) return;            // only with advertising consent
+  if(!ADSENSE_CLIENT){                // not configured — show readiness hint
+    document.querySelectorAll('.ad-slot .ad-hint').forEach(h=>{ h.textContent = "Ad space ready · add your AdSense publisher ID to go live"; });
+    return;
+  }
+  if(!Object.values(AD_SLOT_IDS).some(Boolean)){   // connected to AdSense, but no ad units created yet
+    document.querySelectorAll('.ad-slot .ad-hint').forEach(h=>{ h.textContent = "Connected to AdSense · add ad-unit IDs below (or turn on Auto ads) to display ads"; });
+    return;
+  }
+  // loader is already in <head>; just render the units
+  document.querySelectorAll('.ad-slot').forEach(slot=>{
+    const zone = slot.getAttribute('data-ad-slot');
+    const slotId = AD_SLOT_IDS[zone];
+    if(!slotId || slot.dataset.adReady) return;
+    slot.dataset.adReady = "1";
+    slot.innerHTML =
+      '<ins class="adsbygoogle" style="display:block;width:100%" ' +
+      'data-ad-client="'+ADSENSE_CLIENT+'" data-ad-slot="'+slotId+'" ' +
+      'data-ad-format="auto" data-full-width-responsive="true"></ins>';
+    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e){}
+  });
+}
+
+/* consent banner UI */
+const consentEl = $('consent');
+function showConsent(){ consentEl.classList.add('show'); }
+function hideConsent(){ consentEl.classList.remove('show'); }
+
+function applyConsent(c){
+  saveConsent(c);
+  if(typeof gtag === 'function'){
+    gtag('consent', 'update', {
+      ad_storage:        c.ads ? 'granted' : 'denied',
+      ad_user_data:      c.ads ? 'granted' : 'denied',
+      ad_personalization:c.ads ? 'granted' : 'denied',
+      analytics_storage: c.analytics ? 'granted' : 'denied'
+    });
+  }
+  hideConsent();
+  if(c.ads) initAds();
+}
+
+$('consentAccept').addEventListener('click', ()=>{
+  applyConsent({ essential:true, ads:true, analytics:true, ts:Date.now() });
+});
+$('consentReject').addEventListener('click', ()=>{
+  applyConsent({ essential:true, ads:false, analytics:false, ts:Date.now() });
+});
+$('consentSave').addEventListener('click', ()=>{
+  const prefs = $('consentPrefs');
+  if(prefs.classList.contains('hidden')){ prefs.classList.remove('hidden'); return; }
+  applyConsent({
+    essential:true,
+    ads: $('prefAds').checked,
+    analytics: $('prefAnalytics').checked,
+    ts: Date.now()
+  });
+});
+$('manageCookies').addEventListener('click', ()=>{
+  const c = getConsent();
+  $('prefAds').checked = !!(c && c.ads);
+  $('prefAnalytics').checked = !!(c && c.analytics);
+  $('consentPrefs').classList.remove('hidden');
+  showConsent();
+});
+
+/* on load: show banner if no prior choice, else honor it */
+(function bootConsent(){
+  const c = getConsent();
+  if(!c){ showConsent(); }
+  else if(c.ads){ initAds(); }
+})();
+</script>
+</body>
+</html>
