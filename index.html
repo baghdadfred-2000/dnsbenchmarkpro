@@ -704,7 +704,7 @@
       </div>
 
       <div class="mt-9 pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row gap-3 items-center justify-between text-[12px] text-white/35">
-        <p>© 2026 Genext Information Systems. All rights reserved.</p>
+        <p>© 2026 Genext Information Systems. All rights reserved. V1.0</p>
         <p>DNSBenchmarkPro.com — DNS Benchmark Pro™</p>
       </div>
     </div>
@@ -1381,50 +1381,4 @@ const consentEl = $('consent');
 function showConsent(){ consentEl.classList.add('show'); }
 function hideConsent(){ consentEl.classList.remove('show'); }
 
-function applyConsent(c){
-  saveConsent(c);
-  if(typeof gtag === 'function'){
-    gtag('consent', 'update', {
-      ad_storage:        c.ads ? 'granted' : 'denied',
-      ad_user_data:      c.ads ? 'granted' : 'denied',
-      ad_personalization:c.ads ? 'granted' : 'denied',
-      analytics_storage: c.analytics ? 'granted' : 'denied'
-    });
-  }
-  hideConsent();
-  if(c.ads) initAds();
-}
-
-$('consentAccept').addEventListener('click', ()=>{
-  applyConsent({ essential:true, ads:true, analytics:true, ts:Date.now() });
-});
-$('consentReject').addEventListener('click', ()=>{
-  applyConsent({ essential:true, ads:false, analytics:false, ts:Date.now() });
-});
-$('consentSave').addEventListener('click', ()=>{
-  const prefs = $('consentPrefs');
-  if(prefs.classList.contains('hidden')){ prefs.classList.remove('hidden'); return; }
-  applyConsent({
-    essential:true,
-    ads: $('prefAds').checked,
-    analytics: $('prefAnalytics').checked,
-    ts: Date.now()
-  });
-});
-$('manageCookies').addEventListener('click', ()=>{
-  const c = getConsent();
-  $('prefAds').checked = !!(c && c.ads);
-  $('prefAnalytics').checked = !!(c && c.analytics);
-  $('consentPrefs').classList.remove('hidden');
-  showConsent();
-});
-
-/* on load: show banner if no prior choice, else honor it */
-(function bootConsent(){
-  const c = getConsent();
-  if(!c){ showConsent(); }
-  else if(c.ads){ initAds(); }
-})();
-</script>
-</body>
-</html>
+function applyConsent(c){
