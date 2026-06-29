@@ -1381,4 +1381,75 @@ const consentEl = $('consent');
 function showConsent(){ consentEl.classList.add('show'); }
 function hideConsent(){ consentEl.classList.remove('show'); }
 
-function applyConsent(c){
+function applyConsent(c){
+  // Reflect the saved choice into Google Consent Mode, then load/render ads if allowed.
+  if(c && c.ads){
+    gtag('consent', 'update', {
+      ad_storage:'granted', ad_user_data:'granted', ad_personalization:'granted',
+      analytics_storage: c.analytics ? 'granted' : 'denied'
+    });
+    loadAdSenseScript();
+    initAds();
+  } else {
+    gtag('consent', 'update', {
+      ad_storage:'denied', ad_user_data:'denied', ad_personalization:'denied',
+      analytics_storage: (c && c.analytics) ? 'granted' : 'denied'
+    });
+  }
+}
+
+/* reflect a saved choice into the preference checkboxes */
+function syncPrefInputs(c){
+  const ads = $('prefAds'), an = $('prefAnalytics');
+  if(ads) ads.checked = !!(c && c.ads);
+  if(an)  an.checked  = !!(c && c.analytics);
+}
+
+/* persist a choice, apply it, and close the banner */
+function commitConsent(c){
+  saveConsent(c);
+  applyConsent(c);
+  hideConsent();
+}
+
+/* wire up the consent banner controls */
+(function initConsentUI(){
+  const accept = $('consentAccept');
+  const reject = $('consentReject');
+  const save   = $('consentSave');
+  const prefs  = $('consentPrefs');
+  const manage = $('manageCookies');
+
+  if(accept) accept.addEventListener('click', ()=> commitConsent({ ads:true, analytics:true }));
+  if(reject) reject.addEventListener('click', ()=> commitConsent({ ads:false, analytics:false }));
+
+  // "Save preferences": first click reveals the toggles; once open, it saves them.
+  if(save) save.addEventListener('click', ()=>{
+    if(prefs && prefs.classList.contains('hidden')){
+      prefs.classList.remove('hidden');
+      syncPrefInputs(getConsent());
+      return;
+    }
+    commitConsent({
+      ads: !!($('prefAds') && $('prefAds').checked),
+      analytics: !!($('prefAnalytics') && $('prefAnalytics').checked)
+    });
+  });
+
+  // Footer "Cookie settings" reopens the banner with the preference panel expanded.
+  if(manage) manage.addEventListener('click', ()=>{
+    if(prefs) prefs.classList.remove('hidden');
+    syncPrefInputs(getConsent());
+    showConsent();
+  });
+})();
+
+/* on load: returning visitors get their saved choice applied; new visitors see the banner */
+(function bootstrapConsent(){
+  const c = getConsent();
+  if(c){ applyConsent(c); }
+  else { setTimeout(showConsent, 600); }
+})();
+</script>
+</body>
+</html>

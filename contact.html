@@ -169,4 +169,11 @@
         'Topic: ' + topic + '\n\n' +
         msg;
       note.textContent = 'Opening your email app…';
-      window.location.href = 'mailto
+      window.location.href = 'mailto:support@dnsbenchmarkpro.com'
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body=' + encodeURIComponent(body);
+    });
+  })();
+</script>
+</body>
+</html>
